@@ -89,8 +89,6 @@ cddFaderCache equ $5ABC
 word_5A8A equ $5A8A
 word_5ABE equ $5ABE
 word_5AC0 equ $5AC0
-word_5AC2 equ $5AC2
-word_5AC4 equ $5AC4
 word_5ADC equ $5ADC
 word_5AEA equ $5AEA
 word_5AF4 equ $5AF4

@@ -18,6 +18,8 @@ redBlinkTimer   equ $5809
 volumeBitfield  equ $5AB6
 masterVolume    equ $5AB8
 systemVolume    equ $5ABA
+targetVolume    equ $5AC2
+targetVolumeDelta equ $5AC4
 volumeSlope     equ $5AC6
 
 ;   CDBOOT variables

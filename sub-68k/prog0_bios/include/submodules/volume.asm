@@ -51,7 +51,7 @@ _fdrset:                ; CODE XREF: sub_2946+22j initCdd+2Cp
 	bclr #1, volumeBitfield(a5)
 	swap d1
 	move.w systemVolume(a5), d1
-	move.w d1, word_5AC2(a5)
+	move.w d1, targetVolume(a5)
 	move.w d1, word_5AC0(a5)
 	ror.w #4, d1
 	lsl.l #4, d1
@@ -106,7 +106,7 @@ cddEnableDeemphasis:               ; CODE XREF: BIOS:00001172p
 	move.b #GA_DEF0, d0
 	bset d0, systemVolume+1(a5)
 	bset d0, word_5AC0+1(a5)
-	bset d0, word_5AC2+1(a5)
+	bset d0, targetVolume+1(a5)
 	bset d0, word_5ABE+1(a5)
 	rts
 ; End of function cddEnableDeemphasis
@@ -119,7 +119,7 @@ cddDisableDeemphasis:               ; CODE XREF: BIOS:loc_1178p
 	move.b #GA_DEF0, d0
 	bclr d0, systemVolume+1(a5)
 	bclr d0, word_5AC0+1(a5)
-	bclr d0, word_5AC2+1(a5)
+	bclr d0, targetVolume+1(a5)
 	bclr d0, word_5ABE+1(a5)
 	rts
 ; End of function cddDisableDeemphasis
@@ -140,7 +140,7 @@ _fdrchg:                ; CODE XREF: sub_2946+26j
 	lsl.l #4, d1
 	move.w d1, d0
 	swap d1
-	move.w d1, word_5AC2(a5)
+	move.w d1, targetVolume(a5)
 	lsr.w #4, d1
 	lsr.w #4, d0
 
@@ -152,7 +152,7 @@ _fdrchg:                ; CODE XREF: sub_2946+26j
 	neg.w volumeSlope(a5)
 
 @loc_2836:               ; CODE XREF: _fdrchg+2Cj
-	move.w d0, word_5AC4(a5)
+	move.w d0, targetVolumeDelta(a5)
 	bset #1, volumeBitfield(a5)
 	rts
 ; End of function _fdrchg
@@ -264,32 +264,36 @@ sub_28CC:               ; CODE XREF: updateVolume+36p
 
 
 sub_28EA:               ; CODE XREF: updateVolume+48p
-	move.w word_5AC4(a5), d0
-	bmi.s @loc_2904
+	move.w targetVolumeDelta(a5), d0
+	bmi.s @goingDown
+	; Volume is going up
 	sub.w volumeSlope(a5), d0
-	bcs.s @loc_290A
+	bcs.s @fadeComplete
 
-@loc_28F6:               ; CODE XREF: sub_28EA+1Ej
+@fadeIncomplete:               ; CODE XREF: sub_28EA+1Ej
+	; Fade is not complete
 	moveq #0, d1
-	move.w word_5AC2(a5), d1
+	move.w targetVolume(a5), d1
 	ror.l #4, d1
 	add.w d0, d1
 	rol.l #4, d1
 	bra.s @loc_291A
 ; ---------------------------------------------------------------------------
 
-@loc_2904:               ; CODE XREF: sub_28EA+4j
+@goingDown:               ; CODE XREF: sub_28EA+4j
+	; Volume is going down
 	sub.w volumeSlope(a5), d0
-	bcs.s @loc_28F6
+	bcs.s @fadeIncomplete
 
-@loc_290A:               ; CODE XREF: sub_28EA+Aj
-	move.w word_5AC2(a5), d1
+@fadeComplete:               ; CODE XREF: sub_28EA+Aj
+	; Fade is complete
+	move.w targetVolume(a5), d1
 	moveq #0, d0
 	clr.w volumeSlope(a5)
 	bclr #1, volumeBitfield(a5)
 
 @loc_291A:               ; CODE XREF: sub_28EA+18j
 	move.w d1, systemVolume(a5)
-	move.w d0, word_5AC4(a5)
+	move.w d0, targetVolumeDelta(a5)
 	rts
 ; End of function sub_28EA
